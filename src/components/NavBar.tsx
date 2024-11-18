@@ -48,7 +48,7 @@ import {
         <Portal>
           <MenuList width="100%" position="fixed" top="0" left="0" bg={bgColor}>
             {[
-                { name: 'Blog', path: '/blogs' },
+                { name: 'Blog', path: '/blog' },
                 { name: 'Main Site', path: 'https://mohammadjafari80.github.io' }, // Replace with your main site URL
             ].map((item) => (
               <Link key={item.name} smooth={true} duration={500}>

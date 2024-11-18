@@ -30,7 +30,7 @@ const App: React.FC = () => {
   }, []);
   
   return (
-      <BrowserRouter basename="/blogs">
+      <BrowserRouter basename="/blog">
         {/* <Box> */}
           <NavBar/>
           <Section variant='dark'>
