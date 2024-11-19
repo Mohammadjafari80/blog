@@ -368,7 +368,7 @@ By combining the Canny image with the image prompt, I guided text-to-image diffu
 
 ## Acknowledgments
 
-I want to take a moment to thank the incredible organizers and everyone who made this competition possible. A special thanks to Professor Furong Huang and her team at the University of Maryland, along with Bang An, Chenghao Deng, and Mucong Ding, for their dedication and support throughout the event. Their guidance and assistance were invaluable, and I’m truly grateful for their efforts in making this experience so enriching and rewarding!
+I want to take a moment to thank the incredible organizers and everyone who made this competition possible. A special thanks to **Professor Furong Huang** and her team at the University of Maryland, along with **Bang An**, **Chenghao Deng**, and **Mucong Ding**, for their dedication and support throughout the event. Their guidance and assistance were invaluable, and I’m truly grateful for their efforts in making this experience so enriching and rewarding!
 
 I also want to express my gratitude to my friend **Saeid Razavi** for trusting me and generously providing me access to his RTX 3090 GPU, enabling me to work with models like \`FLUX.1-dev\`. Without his support, I would not have been able to use \`FLUX.1-dev\` on Colab or Kaggle given their constraints.
 
