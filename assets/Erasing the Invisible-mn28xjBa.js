@@ -84,7 +84,7 @@ pipeline = FluxControlNetImg2ImgPipeline.from_pretrained(
 
 #### Why Use ControlNet?
 
-**ControlNet** plays a key role in ensuring that the composition of an image remains intact, even while undergoing significant manipulation. Without ControlNet, high-strength transformations can easily disrupt the composition, leading to undesirable outcomes. ControlNet essentially provides a way to guide the transformations more intelligently, making sure the final output doesn’t lose critical features of the original image.
+**ControlNet** plays a key role in ensuring that the composition of an image remains intact, even while undergoing significant manipulation. Without ControlNet, high-strength purifications can easily disrupt the composition, leading to undesirable outcomes. ControlNet essentially provides a way to guide the purifications more intelligently, making sure the final output doesn’t lose critical features of the original image.
 
 #### My Model Choice Journey
 
@@ -104,7 +104,7 @@ Finally, everything ran smoothly, and that felt like a major victory.
 
 ## Entropy Calculation and Image Selection
 
-Now we’re getting into the more sophisticated stuff. To manipulate an image effectively, understanding its complexity is crucial. Calculating **entropy** helps us get a sense of how aggressive we can be with transformations.
+Now we’re getting into the more sophisticated stuff. To manipulate an image effectively, understanding its complexity is crucial. Calculating **entropy** helps us get a sense of how aggressive we can be with purifications.
 
 ### What Is Entropy?
 
@@ -130,7 +130,7 @@ def calculate_entropy(image):
 
 ### Why Entropy Matters
 
-- **High Entropy Images**: Images with high entropy have a lot of detail, and manipulating these requires extra caution to avoid significant quality degradation. Small transformations can lead to noticeable changes, so it’s important to carefully balance each adjustment.
+- **High Entropy Images**: Images with high entropy have a lot of detail, and manipulating these requires extra caution to avoid significant quality degradation. Small purifications can lead to noticeable changes, so it’s important to carefully balance each adjustment.
   
 - **Low Entropy Images**: These tend to retain watermarks even after attacks, especially in smooth regions. The reasoning here is that smoother areas are more likely to hold on to watermark patterns because they lack the visual chaos present in more detailed images.
   
@@ -180,11 +180,11 @@ Even though I didn’t do a quantitative analysis, the visual quality definitely
 
 ## Purification with Varying Parameters
 
-Now comes the exciting part—executing the actual attack. This stage is where I adjusted various parameters to generate different versions of the manipulated images, each with varying levels of transformation.
+Now comes the exciting part—executing the actual attack. This stage is where I adjusted various parameters to generate different versions of the manipulated images, each with varying levels of purification.
 
 ### Hyperparameters in Play
 
-- **Guidance Values**: \`[1, 2, 3, 4, 5, 6, 7, 8]\` were tested to determine how strictly the model should follow its guidance during transformation.
+- **Guidance Values**: \`[1, 2, 3, 4, 5, 6, 7, 8]\` were tested to determine how strictly the model should follow its guidance during purification.
   
 - **Prompt Embeds**: To manage GPU constraints, the prompt embeds were kept generic for all images. The prompt I used was: \`"best quality, no artifacts, extremely detailed"\`. Embedding this prompt beforehand allowed me to bypass using heavy text encoders during the attack.
   
@@ -317,26 +317,17 @@ I replaced the first **\`3\` frequencies** of the attacked image with those from
 
 ### Surrogate Adversarial Attacks
 
-I initially focused on surrogate attacks using the WAVES benchmark surrogates and models from the paper *"Robustness of AI-Image Detectors: Fundamental Limits and Practical Attacks"*. Even with a high epsilon (\`24/255\`) and a large number of steps (\`1000\`) in the PGD attack, these models were unsuccessful.
+I initially focused on surrogate attacks using the WAVES benchmark surrogates and models from the paper *"Robustness of AI-Image Detectors: Fundamental Limits and Practical Attacks"*. Even with a high epsilon (\`24/255\`) and a large number of steps (\`1000\`) in the PGD attack, these models were unsuccessful. Due to the lack of information about the size of the images they were trained on, I tested several sizes: \`224x224\`, \`256x256\`, and \`512x512\`. For these, the noise was calculated and scaled back to \`512x512\` to add to the image. Unfortunately, none of these worked. I suspected the issue might be that these surrogates were not trained on a domain of AI-generated images. To address this, I downloaded a dataset of AI-generated images and created \`10,000\` pairs of generated images and their watermarked versions. I then trained my own surrogates on ResNet18, but despite dedicating several days to this task, it also failed to yield results.
 
-- **Diffusion Pipeline Integration**: I tried integrating surrogates into the image diffusion pipeline, even adding them into the guidance loss function. Despite my best efforts, I observed no noticeable improvements.
+- **Diffusion Pipeline Integration**: I attempted to integrate surrogates into the image diffusion pipeline, even embedding them into the guidance loss function. Despite my best efforts, this approach also showed no noticeable improvements.
 
-### Rinsing
+### Diffusion Rinsing
 
-This method is effective at removing pixel and image-level watermarks and might even succeed in removing some TreeRing watermarks. However, I found the quality degradation to be unjustifiable.
+Rinsing is somewhat similar to purification, but noise is added at each step. This method is effective at removing pixel- and image-level watermarks and might even succeed in removing certain TreeRing watermarks. However, I found the resulting quality degradation to be unjustifiable. It is also possible that I failed to identify optimal hyperparameters for the noise scale and the number of regenerations. I also attempted this method using FLUX-1.dev, which employs FlowMatching. Despite the significant time investment, my implementation was unsuccessful.
 
 ### Pattern Removal Using Average Differences
 
-Towards the end of my experiments, I came across an interesting paper: [Average Difference in Watermarks](https://arxiv.org/pdf/2406.09026). Since I had created TreeRing and StegaStamp versions of \`10,000\` images, I calculated the average image difference across all pairs and saw intriguing patterns for each watermarking algorithm. However, adding or subtracting these patterns—whether on large or small scales—did not work effectively.
-
-### Other Transformations for TreeRing Attacks
-
-Since crop and resize worked surprisingly well on these types of attacks, I experimented with other transformations ranging in degrees of freedom, including Translation, Affine, and Homography. Additionally, I explored optical distortions and a method I coined "patch-aware stretching" (I think I invented it, lol). However, none of these methods performed as effectively as the simple crop and scale approach.
-
-### Reverse Resizing for TreeRing Attacks
-
-Reflecting on the vulnerability of TreeRing watermarks, I considered an alternative approach: instead of cropping the central \`0.9\` and rescaling, I scaled down the entire image and outpainted the margins to fill a \`512x512\` canvas. Using the FluxInpaint pipeline, this method showed decent results but performed on par with the initial approach. The key drawback was its computational cost—about 1000 times heavier than simple crop and scale—and the complexity of parameter tuning for acceptable outpainting. Despite these challenges, it has a notable advantage: it ensures no significant part of the image is removed during processing.
-
+Towards the end of my experiments, I came across an intriguing paper: [Average Difference in Watermarks](https://arxiv.org/pdf/2406.09026). Since I had created TreeRing and StegaStamp versions of \`10,000\` images, I calculated the average image difference across all pairs and observed distinct patterns for each watermarking algorithm. However, attempts to add or subtract these patterns—whether at large or small scales—were ineffective.
 
 #### StegaStamp Average Pattern
 ![StegaStamp](stega_difference.png)
@@ -344,13 +335,22 @@ Reflecting on the vulnerability of TreeRing watermarks, I considered an alternat
 #### TreeRing Average Pattern
 ![TreeRing](tr_difference.png)
 
+### Other Transformations for TreeRing Attacks
+
+Given the success of crop-and-resize attacks, I explored other transformations with varying degrees of freedom, including Translation, Affine, and Homography transformations. Additionally, I experimented with optical distortions and a novel approach I coined "patch-aware stretching" (a method I think I invented, lol). However, none of these methods were as effective as the simple crop-and-resize technique.
+
+### Reverse Resizing for TreeRing Attacks
+
+To address the vulnerability of TreeRing watermarks, I experimented with an alternative approach: instead of cropping the central \`0.9\` region and rescaling, I scaled down the entire image and used outpainting to fill a \`512x512\` canvas. Leveraging the FluxInpaint pipeline, this method produced decent results but performed only on par with the original crop-and-resize approach. The primary drawback was the computational cost—it was approximately 1000 times more resource-intensive than the simpler method—and the complexity of parameter tuning for satisfactory outpainting. Despite these challenges, this method offers a notable advantage: it avoids the removal of significant portions of the image during processing.
+
+
 ---
 
 ## My Alternate Approach
 
 Before using Flux, my primary pipeline consisted of a vanilla text-to-image diffusion model with Canny ControlNet. The overall strategy was similar, but instead of setting specific strengths on the Img2Img pipeline, I used **IP Adapters**, which essentially serve as image prompts.
 
-By combining the Canny image with the image prompt, I guided text-to-image diffusion models to produce better results. The results were promising for watermark removal while maintaining image quality, composition, and appearance. Unfortunately, IP Adapters were not yet implemented in the HuggingFace library, which forced me to switch to using Img2Img to simulate the effect of image prompts.
+By combining the Canny image with the image prompt, I guided text-to-image diffusion models to produce better results. The results were promising for watermark removal while maintaining image quality, composition, and appearance. Unfortunately, IP Adapters were not yet implemented in the HuggingFace library for FLUX, which forced me to switch to using Img2Img to simulate the effect of image prompts.
 
 ---
 
