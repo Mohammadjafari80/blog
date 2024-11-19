@@ -1,3 +1,18 @@
+<!--
+{
+  "title": "Erasing the Invisible Challenge",
+  "description": "My first competition experience",
+  "keywords": "AI, Machine Learning, Trustworthy AI, Image Watermarking, NeurIPS 2024, TreeRing, StegaStamp",
+  "image": "erasing-the-invisible.jpg",
+  "type": "article",
+  "author": "Mohammad Jafari",
+  "date": "2024-11-20",
+  "category": "Machine Learning",
+  "tags": ["AI", "Deep Learning", "Trustworthy AI"],
+  "readingTime": "5 min"
+}
+-->
+
 # My First Competition Experience
 
 ![Cover Image](erasing-the-invisible.jpg)
@@ -17,7 +32,7 @@ The **"Erasing the Invisible"** challenge at NeurIPS 2024 was an exciting compet
 
 ---
 
-## 1. Setting Up the Pipeline
+## Setting Up the Pipeline
 
 First things first, we need to set up the core components of the attack pipeline. This part might seem a bit routine, but it's absolutely crucial for what comes next.
 
@@ -40,7 +55,6 @@ Due to GPU limitations, I opted for the **4-bit version** of the model (`sayakpa
 Here’s how I loaded these models into our pipeline:
 
 ```python
-base_model = 'black-forest-labs/FLUX.1-dev'
 controlnet_canny = FluxControlNetModel.from_pretrained(
     'InstantX/FLUX.1-dev-Controlnet-Canny',
     cache_dir='./models/',
@@ -54,6 +68,7 @@ transformer_4bit = FluxTransformer2DModel.from_pretrained(
     cache_dir='./models/'
 )
 
+base_model = 'black-forest-labs/FLUX.1-dev'
 pipeline = FluxControlNetImg2ImgPipeline.from_pretrained(
     base_model,
     transformer=transformer_4bit,
@@ -87,7 +102,7 @@ Finally, everything ran smoothly, and that felt like a major victory.
 
 ---
 
-## 2. Entropy Calculation and Image Selection
+## Entropy Calculation and Image Selection
 
 Now we’re getting into the more sophisticated stuff. To manipulate an image effectively, understanding its complexity is crucial. Calculating **entropy** helps us get a sense of how aggressive we can be with transformations.
 
@@ -123,7 +138,7 @@ def calculate_entropy(image):
 
 ---
 
-## 3. Edge Detection with Canny Edge Detector
+## Edge Detection with Canny Edge Detector
 
 To prevent losing essential structural details while manipulating images, I employed the **Canny Edge Detector** to generate edge maps. These edge maps were key in maintaining the composition while tweaking other attributes.
 
@@ -151,7 +166,7 @@ I used thresholds of `low: 100` and `high: 200` for the Canny edge detection. Th
 
 ---
 
-## 4. Image Resizing Strategy
+## Image Resizing Strategy
 
 During the attack phase, I resized the images from `512x512` to `1024x1024` and then reverted them back to `512x512` after processing.
 
@@ -163,7 +178,7 @@ Even though I didn’t do a quantitative analysis, the visual quality definitely
 
 ---
 
-## 5. Purification with Varying Parameters
+## Purification with Varying Parameters
 
 Now comes the exciting part—executing the actual attack. This stage is where I adjusted various parameters to generate different versions of the manipulated images, each with varying levels of transformation.
 
@@ -213,7 +228,7 @@ I believe a higher strength value, such as `0.8`, still produces high-quality im
 
 ---
 
-## 6. Post-Processing with PairOptimizer
+## Post-Processing with PairOptimizer
 
 After generating the attacked images, I used a custom tool called **PairOptimizer** to bring the manipulated images closer to their original versions in terms of visual quality.
 
@@ -258,7 +273,7 @@ I got this idea from my photography experience with Lightroom—using the color 
 
 ---
 
-## 7. Optional Extra Purification
+## Optional Extra Purification
 
 Once I had a set of optimized images, I repeated steps 5 and 6 with much lower strength values (`0.05`, `0.1`). This extra purification step was faster and helped me further refine the images while ensuring **erasing the invisible** remained effective.
 
@@ -268,7 +283,7 @@ Once I had a set of optimized images, I repeated steps 5 and 6 with much lower s
 
 ---
 
-## 8. Handling TreeRing Attacks
+## Handling TreeRing Attacks
 
 **TreeRing Attacks** were particularly challenging due to their latent nature (I learned about them in the parallel BeigeBox track). These attacks hide within image features, making them difficult to detect and remove.
 
@@ -286,7 +301,7 @@ While working on the parallel BeigeBox track, I found that a `0.90` crop almost 
 
 ---
 
-## 9. Final Quality Improvements Using Frequency-Based Adjustments
+## Final Quality Improvements Using Frequency-Based Adjustments
 
 To finalize the image manipulations, I applied a **frequency-based enhancement** using Fast Fourier Transform (FFT). This was inspired by a project I did a few years ago called **Hybrid Images** that combines two images based on their frequencies.
 
@@ -298,7 +313,7 @@ I replaced the first **`3` frequencies** of the attacked image with those from t
 
 ---
 
-## 10. What Didn’t Work
+## What Didn’t Work
 
 ### Surrogate Adversarial Attacks
 
@@ -314,6 +329,15 @@ This method is effective at removing pixel and image-level watermarks and might 
 
 Towards the end of my experiments, I came across an interesting paper: [Average Difference in Watermarks](https://arxiv.org/pdf/2406.09026). Since I had created TreeRing and StegaStamp versions of `10,000` images, I calculated the average image difference across all pairs and saw intriguing patterns for each watermarking algorithm. However, adding or subtracting these patterns—whether on large or small scales—did not work effectively.
 
+### Other Transformations for TreeRing Attacks
+
+Since crop and resize worked surprisingly well on these types of attacks, I experimented with other transformations ranging in degrees of freedom, including Translation, Affine, and Homography. Additionally, I explored optical distortions and a method I coined "patch-aware stretching" (I think I invented it, lol). However, none of these methods performed as effectively as the simple crop and scale approach.
+
+### Reverse Resizing for TreeRing Attacks
+
+Reflecting on the vulnerability of TreeRing watermarks, I considered an alternative approach: instead of cropping the central `0.9` and rescaling, I scaled down the entire image and outpainted the margins to fill a `512x512` canvas. Using the FluxInpaint pipeline, this method showed decent results but performed on par with the initial approach. The key drawback was its computational cost—about 1000 times heavier than simple crop and scale—and the complexity of parameter tuning for acceptable outpainting. Despite these challenges, it has a notable advantage: it ensures no significant part of the image is removed during processing.
+
+
 #### StegaStamp Average Pattern
 ![StegaStamp](stega_difference.png)
 
@@ -322,7 +346,7 @@ Towards the end of my experiments, I came across an interesting paper: [Average 
 
 ---
 
-## 11. My Alternate Approach
+## My Alternate Approach
 
 Before using Flux, my primary pipeline consisted of a vanilla text-to-image diffusion model with Canny ControlNet. The overall strategy was similar, but instead of setting specific strengths on the Img2Img pipeline, I used **IP Adapters**, which essentially serve as image prompts.
 
@@ -330,14 +354,30 @@ By combining the Canny image with the image prompt, I guided text-to-image diffu
 
 ---
 
-## 12. References
+## Fun Facts!
+
+- Over the last month of the competition, I spent about 5 to 10 hours each day coding, looking at images, and brainstorming ideas. It was intense, but also very rewarding.
+
+- One of the hardest parts for me was dealing with slow internet in my country. Every time I wanted to upload a submission, I had to download it from Google Colab or Kaggle to my computer and then re-upload it. This took around 20 minutes each time and ended up being the most internet I’ve ever used in a month!
+
+- To be honest, I joined the competition mainly for the prize money because I wanted to buy a camera (I love photography!). But along the way, I ended up learning so much about diffusion models, samplers, schedulers, and tools like ControlNet, IP Adapters, text-to-image, image-to-image, and inpainting. By the end, I felt like the knowledge I gained was even more valuable than the prize. It’s something that will definitely help me in my research in the future.
+
+- I honestly didn’t expect the watermarks to be so strong. My initial thought was to focus mostly on quality with just a little purification. For one of my first submissions, I concentrated heavily on making the images look great and visually ensuring there weren’t any obvious patterns. I was pretty confident about that submission, but it ended up being one of my worst, with a watermark performance score of `0.96`.  This experience has made me really interested in exploring this area further. It’s closely connected to my current research in trustworthy machine learning, and I’d love to learn more about how to make models better at handling challenges like this in the future.
+
+---
+
+## Acknowledgments
+
+I want to take a moment to thank the incredible organizers and everyone who made this competition possible. A special thanks to Professor Furong Huang and her team at the University of Maryland, along with Bang An, Chenghao Deng, and Mucong Ding, for their dedication and support throughout the event. Their guidance and assistance were invaluable, and I’m truly grateful for their efforts in making this experience so enriching and rewarding!
+
+---
+
+## References
 
 - [Flux Pipeline Documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/flux)
 - [ControlNet Pipeline Documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/controlnet)
-- [Robustness of AI-Image Detectors](https://arxiv.org/abs/2401.08573)
-- [TreeRing Watermarking](https://arxiv.org/abs/2310.00076)
+- [WAVES Benchmark](https://arxiv.org/abs/2401.08573)
+- [Robustness of AI-Image Detectors](https://arxiv.org/abs/2310.00076)
 - [Average Difference in Watermarks](https://arxiv.org/pdf/2406.09026)
-- [GLIDE: Towards Photorealistic Image Generation](https://arxiv.org/abs/1706.06083)
-- [Canny Edge Detection Tutorial](https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html)
+- [Canny Edge Detection](https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html)
 - [Hybrid Images](https://en.wikipedia.org/wiki/Hybrid_image)
-```
