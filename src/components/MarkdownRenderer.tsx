@@ -23,9 +23,15 @@ interface MarkdownRendererProps {
   meta?: {
     title?: string;
     description?: string;
+    keywords?: string;
     image?: string;
-    url?: string;
-  };
+    type?: string;
+    author?: string;
+    date?: string;
+    category?: string;
+    tags?: string[];
+    readingTime?: string;
+  },
 }
 
 const colors = {
@@ -33,14 +39,6 @@ const colors = {
   green: "#4a9c80",
   red: "#d05a45"
 };
-
-
-// const [gradientColors] = useState([
-//     "#d05a45", // Color 1
-//     "#e4aa42", // Color 2
-//     "#3f6ee7", // Color 3
-//     "#4a9c80", // Color 4
-//   ]);
 
 const CodeBlock = ({ children, className }: any) => {
   const language = className ? className.replace(/language-/, '') : 'javascript';
@@ -115,6 +113,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   meta 
 }) => {
   const codeBgColor = useColorModeValue('gray.50', 'gray.800');
+
+
+  const {
+    title = 'Blog',
+    description = 'Mohammad Jafari - Blog Page',
+    keywords = 'trustworhy ML, machine learning, deep learning, large language models',
+    image = '',
+    type = 'article',
+    author = 'Mohammad Jafari',
+    date = '',
+    category = '',
+    tags = [],
+    readingTime = 'N/A',
+  } = meta || {};
+
 
   const components = {
     h1: (props: any) => (
@@ -332,7 +345,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   return (
     <>
-      {meta && <Helmet>...</Helmet>}
+      {meta && (
+        <Helmet>
+          <title>{title}</title>
+          <meta name="description" content={description} />
+          <meta name="keywords" content={keywords} />
+          <meta name="author" content={author} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={description} />
+          <meta property="og:image" content={image} />
+          <meta property="og:type" content={type} />
+          <meta property="article:published_time" content={date} />
+          <meta property="article:section" content={category} />
+          <meta property="article:tag" content={tags.join(', ')} />
+          <meta name="readingTime" content={readingTime} />
+        </Helmet>
+      )}
       <Box 
         dir={dir}
         sx={{

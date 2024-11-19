@@ -57,7 +57,7 @@ const Post: React.FC = () => {
     return (
       <Box p={4}>
         <Skeleton height="40px" mb={4} />
-        <Skeleton height="600px" mb={4} />
+        <Skeleton height="300px" mb={4} />
         <SkeletonText noOfLines={7} spacing="4" />
       </Box>
     );
