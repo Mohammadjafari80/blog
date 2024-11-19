@@ -90,7 +90,7 @@ pipeline = FluxControlNetImg2ImgPipeline.from_pretrained(
 
 Getting to the final model setup wasn’t straightforward. I started with image-based diffusion models like **GLIDE** and later moved on to **v-diffusions**. After two weeks of experimenting with different schedulers and samplers, I made the jump to **latent diffusion models**, despite their complexity.
 
-I initially used **Stable Diffusion v1.5**, which showed promising results, but versions 2.0 and SDXL didn’t work as well for my needs. Then came the shift to `Flux-1.dev`, and VRAM issues quickly followed. Even my friend’s RTX 3090 with 24GB wasn’t enough!
+I initially used **Stable Diffusion v1.5**, which showed promising results, but versions 2.0 and SDXL didn’t work as well for my needs. Then came the shift to `FLUX.1-dev`, and VRAM issues quickly followed. Even my friend’s RTX 3090 with 24GB wasn’t enough!
 
 I solved this by:
 
@@ -323,7 +323,7 @@ I initially focused on surrogate attacks using the WAVES benchmark surrogates an
 
 ### Diffusion Rinsing
 
-Rinsing is somewhat similar to purification, but noise is added at each step. This method is effective at removing pixel- and image-level watermarks and might even succeed in removing certain TreeRing watermarks. However, I found the resulting quality degradation to be unjustifiable. It is also possible that I failed to identify optimal hyperparameters for the noise scale and the number of regenerations. I also attempted this method using FLUX-1.dev, which employs FlowMatching. Despite the significant time investment, my implementation was unsuccessful.
+Rinsing is somewhat similar to purification, but noise is added at each step. This method is effective at removing pixel- and image-level watermarks and might even succeed in removing certain TreeRing watermarks. However, I found the resulting quality degradation to be unjustifiable. It is also possible that I failed to identify optimal hyperparameters for the noise scale and the number of regenerations. I also attempted this method using FLUX.1-dev, which employs FlowMatching. Despite the significant time investment, my implementation was unsuccessful.
 
 ### Pattern Removal Using Average Differences
 
@@ -370,7 +370,7 @@ By combining the Canny image with the image prompt, I guided text-to-image diffu
 
 I want to take a moment to thank the incredible organizers and everyone who made this competition possible. A special thanks to Professor Furong Huang and her team at the University of Maryland, along with Bang An, Chenghao Deng, and Mucong Ding, for their dedication and support throughout the event. Their guidance and assistance were invaluable, and I’m truly grateful for their efforts in making this experience so enriching and rewarding!
 
-I also want to express my gratitude to my friend **Saeid Razavi** for trusting me and generously providing me access to his **RTX 3090 GPU**, enabling me to work with models like **FLUX**. Without his support, fitting FLUX on Colab or Kaggle GPUs would have been impossible.
+I also want to express my gratitude to my friend **Saeid Razavi** for trusting me and generously providing me access to his RTX 3090 GPU, enabling me to work with models like `FLUX.1-dev`. Without his support, I would not have been able to use `FLUX.1-dev` on Colab or Kaggle given their constraints.
 
 ---
 
