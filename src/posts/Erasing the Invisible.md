@@ -358,7 +358,7 @@ By combining the Canny image with the image prompt, I guided text-to-image diffu
 
 - Over the last month of the competition, I spent about 5 to 10 hours each day coding, looking at images, and brainstorming ideas. It was intense, but also very rewarding.
 
-- One of the hardest parts for me was dealing with slow internet in my country. Every time I wanted to upload a submission, I had to download it from Google Colab or Kaggle to my computer and then re-upload it. This took around 20 minutes each time and ended up being the most internet I’ve ever used in a month!
+- One of the biggest challenges I faced was dealing with slow internet in my country. Each time I needed to upload a submission, I had to first download it from Google Colab or Kaggle to my computer and then re-upload it, which took around 20 minutes per submission. Additionally, I sometimes had to combine multiple results because my method wasn’t fast enough to process 300 images in a single run within the time limits imposed by Colab and Kaggle’s free usage tiers. This ended up being the most internet bandwidth I’ve ever used in a month!
 
 - To be honest, I joined the competition mainly for the prize money because I wanted to buy a camera (I love photography!). But along the way, I ended up learning so much about diffusion models, samplers, schedulers, and tools like ControlNet, IP Adapters, text-to-image, image-to-image, and inpainting. By the end, I felt like the knowledge I gained was even more valuable than the prize. It’s something that will definitely help me in my research in the future.
 
@@ -369,6 +369,8 @@ By combining the Canny image with the image prompt, I guided text-to-image diffu
 ## Acknowledgments
 
 I want to take a moment to thank the incredible organizers and everyone who made this competition possible. A special thanks to Professor Furong Huang and her team at the University of Maryland, along with Bang An, Chenghao Deng, and Mucong Ding, for their dedication and support throughout the event. Their guidance and assistance were invaluable, and I’m truly grateful for their efforts in making this experience so enriching and rewarding!
+
+I also want to express my gratitude to my friend **Saeid Razavi** for trusting me and generously providing me access to his **RTX 3090 GPU**, enabling me to work with models like **FLUX**. Without his support, fitting FLUX on Colab or Kaggle GPUs would have been impossible.
 
 ---
 
