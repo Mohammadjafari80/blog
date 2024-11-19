@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import MarkdownRenderer from './MarkdownRenderer';
-import { Box, Heading, Skeleton, SkeletonText, SkeletonCircle, Image } from '@chakra-ui/react';
+import { Box, Heading, Skeleton, SkeletonText } from '@chakra-ui/react';
 
 const markdownFiles = import.meta.glob('../posts/*.md', { as: 'raw' });
 

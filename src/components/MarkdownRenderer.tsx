@@ -43,77 +43,77 @@ const colors = {
 //   ]);
 
 const CodeBlock = ({ children, className }: any) => {
-    const language = className ? className.replace(/language-/, '') : 'javascript';
-    
-    return (
-      <Highlight
-        theme={themes.nightOwl}
-        code={children.trim()}
-        language={language as any}
-      >
-        {({ className, style, tokens, getLineProps, getTokenProps }) => (
+  const language = className ? className.replace(/language-/, '') : 'javascript';
+
+  return (
+    <Highlight
+      theme={themes.nightOwl}
+      code={children.trim()}
+      language={language as any}
+    >
+      {({ tokens, getLineProps, getTokenProps }) => (
+        <Box
+          as="pre"
+          p={4}
+          my={4}
+          borderRadius="lg"
+          bg="gray.900"
+          overflowX="auto"
+          fontSize="sm"
+          border="1px solid"
+          borderColor={`${colors.blue}22`}
+          position="relative"
+        >
+          {/* Language badge */}
           <Box
-            as="pre"
-            p={4}
-            my={4}
-            borderRadius="lg"
-            bg="gray.900"
-            overflowX="auto"
-            fontSize="sm"
-            border="1px solid"
-            borderColor={`${colors.blue}22`}
-            position="relative"
+            position="absolute"
+            top={2}
+            right={2}
+            px={2}
+            py={1}
+            fontSize="xs"
+            color={colors.green}
+            bg={`${colors.green}22`}
+            borderRadius="md"
+            textTransform="uppercase"
+            letterSpacing="wide"
           >
-            {/* Language badge */}
-            <Box
-              position="absolute"
-              top={2}
-              right={2}
-              px={2}
-              py={1}
-              fontSize="xs"
-              color={colors.green}
-              bg={`${colors.green}22`}
-              borderRadius="md"
-              textTransform="uppercase"
-              letterSpacing="wide"
-            >
-              {language}
-            </Box>
-            <Box fontFamily="mono">
-              {tokens.map((line, i) => (
-                <Box {...getLineProps({ line, key: i })} display="table-row">
-                  {/* Line number */}
-                  <Box
-                    display="table-cell"
-                    pr={4}
-                    opacity={0.5}
-                    userSelect="none"
-                    color={colors.green}
-                  >
-                    {i + 1}
-                  </Box>
-                  {/* Code content */}
-                  <Box display="table-cell">
-                    {line.map((token, key) => (
-                      <span {...getTokenProps({ token, key })} />
-                    ))}
-                  </Box>
-                </Box>
-              ))}
-            </Box>
+            {language}
           </Box>
-        )}
-      </Highlight>
-    );
-  };
+          <Box fontFamily="mono">
+            {tokens.map((line, i) => (
+              <Box {...getLineProps({ line, key: i })} display="table-row">
+                {/* Line number */}
+                <Box
+                  display="table-cell"
+                  pr={4}
+                  opacity={0.5}
+                  userSelect="none"
+                  color={colors.green}
+                >
+                  {i + 1}
+                </Box>
+                {/* Code content */}
+                <Box display="table-cell">
+                  {line.map((token, key) => (
+                    <span {...getTokenProps({ token, key })} />
+                  ))}
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
+    </Highlight>
+  );
+};
+
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ 
   content, 
   dir = 'ltr',
   meta 
 }) => {
-  const linkColor = useColorModeValue(colors.blue, `${colors.blue}dd`);
   const codeBgColor = useColorModeValue('gray.50', 'gray.800');
 
   const components = {
